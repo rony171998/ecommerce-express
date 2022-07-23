@@ -27,6 +27,7 @@ const {
 	protectSession,
 	protectProductAccount,
 } = require('../middlewares/auth.middleware');
+const { upload } = require('../utils/upload.util');
 const { productExists } = require('../middlewares/products.middleware');
 const { categoryExists } = require('../middlewares/categories.middleware');
 
@@ -38,7 +39,8 @@ productsRouter.get('/categories', getAllProduct);
 
 productsRouter.use(protectSession);
 
-productsRouter.post('/', createProductValidators, createProduct);
+productsRouter.post('/', upload.array('productImg',5) ,createProductValidators, createProduct);
+
 
 productsRouter
 	.use('/:id', productExists)
