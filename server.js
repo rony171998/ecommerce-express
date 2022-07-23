@@ -17,7 +17,7 @@ db.sync()
 	.catch(err => console.log(err));
 	
 	const PORT = process.env.PORT || 4000;
-	const HOST = process.env.DB_HOST;
+	const HOST = process.env.HOST;
 app.listen(PORT,HOST,  () => {
-	console.log('Express app running!! on port '+PORT +' on port '+HOST);
+	console.log('Express app running!! on port '+PORT +' on host '+HOST +'NODE:' +process.env.NODE_ENV );
 });
