@@ -17,7 +17,6 @@ const {
 } = require('../middlewares/validators.middleware');
 const {
 	protectSession,
-	protectOrderAccount,
 } = require('../middlewares/auth.middleware');
 
 const cartRouter = express.Router();
@@ -31,8 +30,8 @@ cartRouter.use(protectSession);
 cartRouter
 	
 	.post('/add-product', createproductsinCartValidators, createproductsinCart)
-	.patch('/update-cart',protectOrderAccount, updateproductsinCart)
-	.delete('/:productId',protectOrderAccount, deleteproductsinCart)
-	.post('/purchase',protectOrderAccount, postCartPurchase);
+	.patch('/update-cart', updateproductsinCart)
+	.delete('/:productId', deleteproductsinCart)
+	.post('/purchase', postCartPurchase);
 
 module.exports = { cartRouter };

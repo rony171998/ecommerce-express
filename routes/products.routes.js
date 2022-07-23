@@ -25,7 +25,7 @@ const {
 
 const {
 	protectSession,
-	protectUserAdmin,
+	protectProductAccount,
 } = require('../middlewares/auth.middleware');
 const { productExists } = require('../middlewares/products.middleware');
 const { categoryExists } = require('../middlewares/categories.middleware');
@@ -44,8 +44,8 @@ productsRouter
 	.use('/:id', productExists)
 	.route('/:id')
 	.get(getProductById)
-	.patch(protectUserAdmin, updateProduct)
-	.delete(protectUserAdmin, deleteProduct);
+	.patch(protectProductAccount, updateProduct)
+	.delete(protectProductAccount, deleteProduct);
 
 productsRouter
 	.get('/categories', getAllCategories)

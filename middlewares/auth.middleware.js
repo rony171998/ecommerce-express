@@ -57,12 +57,12 @@ const protectUserAccount = (req, res, next) => {
 
 	next();
 };
-const protectOrderAccount = (req, res, next) => {
+const protectProductAccount = (req, res, next) => {
 	// const { id } = req.params -> Alternative
-	const { sessionUser, order } = req;
+	const { sessionUser, product } = req;
 
 	// If the id's don't match, return error (403)
-	if (sessionUser.id !== order.userId) {
+	if (sessionUser.id !== product.userId) {
 		return next(new AppError('You do not own this account', 403));
 	}
 
@@ -81,24 +81,8 @@ const protectUserAdmin = (req, res, next) => {
 	next();
 };
 
-const protectUserAccountReview = catchAsync (async (req, res, next) => {
-	const { id } = req.params //-> Alternative
-	const { sessionUser } = req;
-
-	const review =await Review.findOne({ where: { id } });
-	console.log(review);
-
-	// If the id's don't match, return error (403)
-	if (sessionUser.id !== review.userId) {
-		return next(new AppError('You do not own this account', 403));
-	}
-
-	next();
-});
-
 module.exports = { protectSession, 
 	protectUserAccount , 
 	protectUserAdmin ,
-	protectUserAccountReview,
-	protectOrderAccount
+	protectProductAccount
 }; // Export the middleware 
