@@ -14,7 +14,7 @@ const productExists = catchAsync(async (req, res, next) => {
 		return next(new AppError('Product not found', 404));
 	}
 
-	req.order  = order ;
+	req.product  = product ;
 	next();
 });
 

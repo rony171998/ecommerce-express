@@ -14,13 +14,14 @@ const {
 const {
 	getAllCategories,
 	postCategories,
+	getCategoriesbyid,
 	patchCategories,
 	deleteCategories,
 
 } = require('../controllers/categories.controller');
 
 const {
-	createProductValidators
+	createProductValidators, createCategoryValidators
 } = require('../middlewares/validators.middleware');
 
 const {
@@ -35,12 +36,21 @@ const productsRouter = express.Router();
 
 productsRouter.get('/', getAllProduct);
 
-productsRouter.get('/categories', getAllProduct);
+productsRouter.get('/categories', getAllCategories);
+
+productsRouter.get('/categories/:id', categoryExists ,getCategoriesbyid)
 
 productsRouter.use(protectSession);
 
-productsRouter.post('/', upload.array('productImg',5) ,createProductValidators, createProduct);
+productsRouter.post('/categories', createCategoryValidators, postCategories);
 
+productsRouter.post('/', upload.array('productImg',5),createProductValidators , createProduct);
+
+productsRouter.get('/categories', getAllCategories)
+
+productsRouter.patch('/categories/:id', categoryExists ,patchCategories)
+
+productsRouter.delete('/categories/:id', categoryExists ,deleteCategories);
 
 productsRouter
 	.use('/:id', productExists)
@@ -48,11 +58,5 @@ productsRouter
 	.get(getProductById)
 	.patch(protectProductAccount, updateProduct)
 	.delete(protectProductAccount, deleteProduct);
-
-productsRouter
-	.get('/categories', getAllCategories)
-	.post('/categories', createProductValidators, postCategories)
-	.patch('/categories/:id', categoryExists ,patchCategories)
-	.delete('/categories/:id', categoryExists ,deleteCategories);
-
+	
 module.exports = { productsRouter };

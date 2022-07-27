@@ -5,7 +5,6 @@ const {
 	
 	createproductsinCart,
     getAllproductsinCart,
-    getproductsinCartById,
     updateproductsinCart,
     deleteproductsinCart,
     postCartPurchase,
@@ -23,15 +22,14 @@ const cartRouter = express.Router();
 
 cartRouter.get('/', getAllproductsinCart);
 
-cartRouter.get('/:id', getproductsinCartById);
-
 cartRouter.use(protectSession);
+
+cartRouter.delete('/:id', deleteproductsinCart)
 
 cartRouter
 	
 	.post('/add-product', createproductsinCartValidators, createproductsinCart)
 	.patch('/update-cart', updateproductsinCart)
-	.delete('/:productId', deleteproductsinCart)
 	.post('/purchase', postCartPurchase);
 
 module.exports = { cartRouter };

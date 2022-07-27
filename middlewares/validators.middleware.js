@@ -55,7 +55,6 @@ const createProductValidators = [
 	
 ]
 const createproductsinCartValidators = [
-	body('cartId').notEmpty().withMessage('CartId cannot be empty'),
 	body('productId').notEmpty().withMessage('ProductId cannot be empty'),
 	body('quantity')
 		.notEmpty()

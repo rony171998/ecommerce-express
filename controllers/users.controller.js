@@ -1,6 +1,7 @@
 // Models
 const { User } = require('../models/user.model');
 const { Order } = require('../models/order.model');
+const { Product } = require('../models/product.model');
 
 
 // Utils
@@ -14,11 +15,12 @@ const dotenv = require('dotenv');
  //Gen secrets for JWT, require('crypto').randomBytes(64).toString('hex')
 dotenv.config({ path: './config.env' });
 
-const getAllUsers = catchAsync(async (req, res, next) => {
-	const user = await User.findAll({ where: { status: 'active' }, 
+const getMeProducts = catchAsync(async (req, res, next) => {
+	const { sessionUser } = req;
+	const user = await User.findOne({ where: { id: sessionUser.id , status: "active" }, 
 		include: [
 			{
-				model: Order, 
+				model: Product, 
 			},
 		],
 		
@@ -113,9 +115,9 @@ const deleteUser = catchAsync(async (req, res, next) => {
 });
 
 const getUserOrdersAll = catchAsync(async (req, res, next) => {
-	const { user } = req;
+	const { sessionUser } = req;
 
-	const orders = await Order.findAll();
+	const orders = await Order.findAll({where: {userId: sessionUser.id, status: "active"}});
 
 	res.status(200).json({
 		status: 'success',
@@ -130,7 +132,7 @@ const getUserOrderById = catchAsync(async (req, res, next) => {
 });
 
 module.exports = {
-	getAllUsers,
+	getMeProducts,
 	createUser,
 	login,
 	getUserById,

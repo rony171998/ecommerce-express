@@ -16,6 +16,7 @@ const getAllCategories = catchAsync(async (req, res, next) => {
 
 const postCategories = catchAsync(async (req, res, next) => {
 	const { name } = req.body;
+	console.log("llegue a postCategories");
 	const newCategory = await Category.create({
 		name,
 	});
@@ -26,19 +27,25 @@ const postCategories = catchAsync(async (req, res, next) => {
 	});
 });
 
+const getCategoriesbyid = catchAsync(async (req, res, next) => {
+	const { category } = req;
+
+	res.status(200).json({ status: 'success', category });
+})
+
 const patchCategories = catchAsync(async (req, res, next) => {
-	const { categories } = req;
+	const { category } = req;
 	const { name } = req.body;
 
-	await categories.update({ name });
+	await category.update({ name });
 
-	res.status(200).json({ status: 'success', categories });
+	res.status(200).json({ status: 'success', category });
 })
 
 const deleteCategories = catchAsync(async (req, res, next) => {
-	const { categories } = req;
+	const { category } = req;
 
-	await categories.update({ status: 'deleted' });
+	await category.update({ status: 'deleted' });
 
 	res.status(200).json({ status: 'success' });
 })
@@ -46,6 +53,7 @@ const deleteCategories = catchAsync(async (req, res, next) => {
 module.exports = {
 	getAllCategories,
 	postCategories,
+	getCategoriesbyid,
 	patchCategories,
 	deleteCategories,
 }

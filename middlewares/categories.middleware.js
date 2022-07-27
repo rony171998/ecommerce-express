@@ -14,7 +14,7 @@ const categoryExists = catchAsync(async (req, res, next) => {
 		return next(new AppError('Category not found', 404));
 	}
 
-	req.order  = order ;
+	req.category  = category ;
 	next();
 });
 

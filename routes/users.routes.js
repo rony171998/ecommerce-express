@@ -2,7 +2,7 @@ const express = require('express');
 
 
 const {
-	getAllUsers,
+	getMeProducts,
 	createUser,
 	login,
 	getUserById,
@@ -30,9 +30,9 @@ usersRouter.post('/', createUserValidators, createUser);
 
 usersRouter.post('/login', login);
 
-usersRouter.get('/', getAllUsers);
-
 usersRouter.use(protectSession);
+
+usersRouter.get('/me', getMeProducts);
 
 usersRouter.get('/orders/', getUserOrdersAll);
 

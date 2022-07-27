@@ -35,12 +35,15 @@ app.use(helmet());
 // Compress responses
 app.use(compression());
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+	app.use(morgan('dev'));
+}else{
+	app.use(morgan('tiny'));
+}
 
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/products', productsRouter); 
 app.use('/api/v1/cart', cartRouter);
-
 
 
 //Handle incoming unknown routes to the server
