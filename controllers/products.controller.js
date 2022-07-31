@@ -1,107 +1,123 @@
-const { ref, uploadBytes, getDownloadURL } = require('firebase/storage');
+const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 
-const { Product } = require('../models/product.model');
-const { ProductImg } = require('../models/productImg.model');
+const { Product } = require("../models/product.model");
+const { ProductImg } = require("../models/productImg.model");
 
-const {catchAsync} = require('../utils/catchAsync.util');
-const { storage } = require('../utils/firebase.util');
+const { catchAsync } = require("../utils/catchAsync.util");
+const { storage } = require("../utils/firebase.util");
 
 const createProduct = catchAsync(async (req, res, next) => {
-	const { title, description , price ,categoryId ,quantity  } = req.body;
-	const { sessionUser } = req;
-	const newProduct = await Product.create({
-		title,
-		description,
-		price,
-		categoryId,
-		quantity,
-		userId: sessionUser.id,
-		
-	});
+    const { title, description, price, categoryId, quantity } = req.body;
+    const { sessionUser } = req;
+    const newProduct = await Product.create({
+        title,
+        description,
+        price,
+        categoryId,
+        quantity,
+        userId: sessionUser.id,
+    });
 
-	if (req.files.length > 0) {
-		const filesPromises = req.files.map(async (file) => {
-			const imgRef = ref(storage,`productImgs/${Date.now()}_${file.originalname}`);
-			const imgRes = await uploadBytes(imgRef, file.buffer);
+    if (req.files.length > 0) {
+        const filesPromises = req.files.map(async file => {
+            const imgRef = ref(
+                storage,
+                `productImgs/${Date.now()}_${file.originalname}`
+            );
+            const imgRes = await uploadBytes(imgRef, file.buffer);
+            console.log(imgRes);
 
-			 await ProductImg.create({
-				productId: newProduct.id,
-				imgUrl: imgRes.metadata.fullPath,
-			});
-			
-		});
+            await ProductImg.create({
+                productId: newProduct.id,
+                imgUrl: imgRes.metadata.mediaLink,
+            });
+        });
 
-		await Promise.all(filesPromises);
-				
-	}
+        await Promise.all(filesPromises);
+    }
 
-	const productImgs = await ProductImg.findAll({
-		where: {
-			productId: newProduct.id,
-		},
-	});
+    const productImgs = await ProductImg.findAll({
+        where: {
+            productId: newProduct.id,
+        },
+    });
 
-	res.status(201).json({
-		status: 'success',
-		newProduct,
-		productImgs,
-	});
+    res.status(201).json({
+        status: "success",
+        newProduct,
+        productImgs,
+    });
 });
 
 const getAllProduct = catchAsync(async (req, res, next) => {
-	const products = await Product.findAll({ 
-		where: { status: 'active' },
-		include: [
-			{ model: ProductImg, attributes: ['imgUrl'] },
-		]
-	});
+    const products = await Product.findAll({
+        where: { status: "active" },
+        include: [
+            {
+                model: ProductImg,
+                attributes: ["id", "imgUrl"],
+            },
+        ],
+    });
+    
+	const newpro= products.map(async product => {
 
-	res.status(200).json({
-		status: 'success',
-		products,
+		const productImgsPromises = product.productImgs.map(async (productImg) => {
+				const imgRef = ref(storage, productImg.imgUrl);
+
+				const imgFullPath = await getDownloadURL(imgRef);
+
+				productImg.imgUrl = imgFullPath;
+		});
+		await Promise.all(productImgsPromises);
 	});
+	await Promise.all(newpro);
+
+    res.status(200).json({
+        status: "success",
+        products,
+    });
 });
 
 const getProductById = catchAsync(async (req, res, next) => {
-	const { product } = req;
+    const { product } = req;
 
-	const productImgs = await ProductImg.findAll({
-		where: { productId: product.id },
-	});
+    const productImgs = await ProductImg.findAll({
+        where: { productId: product.id },
+    });
 
-		/*const productImgsPromises = product.productsImg.map(async (productImg) => {
-			const imgRef = ref(storage, productImg.imgUrl);
+    const productImgsPromises = productImgs.map(async productImg => {
+        const imgRef = ref(storage, productImg.imgUrl);
 
-			const imgFullPath = await getDownloadURL(imgRef);
+        const imgFullPath = await getDownloadURL(imgRef);
 
-			productImg.imgUrl = imgFullPath;
-		});
+        productImg.imgUrl = imgFullPath;
+    });
 
-		await Promise.all(productImgsPromises);*/
-	
-		
-	res.status(200).json({
-		status: 'success',
-		product,
-		productImgs,
-	});
+    await Promise.all(productImgsPromises);
+
+    res.status(200).json({
+        status: "success",
+        product,
+        productImgs,
+    });
 });
 
 const updateProduct = catchAsync(async (req, res, next) => {
-	const { product } = req;
-	const { title,description,price,quantity } = req.body;
+    const { product } = req;
+    const { title, description, price, quantity } = req.body;
 
-	await product.update({ title,description,price,quantity });
+    await product.update({ title, description, price, quantity });
 
-	res.status(200).json({ status: 'success', product });
+    res.status(200).json({ status: "success", product });
 });
 
 const deleteProduct = catchAsync(async (req, res, next) => {
-	const { product } = req;
+    const { product } = req;
 
-	await product.update({ status: 'deleted' });
+    await product.update({ status: "deleted" });
 
-	res.status(200).json({ status: 'success' });
+    res.status(200).json({ status: "success" });
 });
 
 module.exports = {
@@ -109,6 +125,5 @@ module.exports = {
     getAllProduct,
     updateProduct,
     deleteProduct,
-	getProductById,
-	
-}
+    getProductById,
+};
