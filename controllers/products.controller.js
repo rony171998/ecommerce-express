@@ -25,11 +25,10 @@ const createProduct = catchAsync(async (req, res, next) => {
                 `productImgs/${Date.now()}_${file.originalname}`
             );
             const imgRes = await uploadBytes(imgRef, file.buffer);
-            console.log(imgRes);
 
             await ProductImg.create({
                 productId: newProduct.id,
-                imgUrl: imgRes.metadata.mediaLink,
+                imgUrl: imgRes.metadata.fullPath,
             });
         });
 
